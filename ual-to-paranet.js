@@ -4,8 +4,13 @@ require("dotenv").config();
 const node_options = {
   endpoint: process.env.OTNODE_HOST,
   port: process.env.OTNODE_PORT,
+  blockchain: {
+      name: process.env.BLOCKCHAIN_NAME,
+      privateKey: process.env.PRIVATE_KEY,
+  },
   useSSL: false,
   maxNumberOfRetries: 100,
+  frequency: 2,
 };
 
 const dkg = new DKGClient(node_options);
@@ -30,7 +35,6 @@ async function createParanetFromUAL() {
 
     // Step 3: Define Paranet options
     const paranetOptions = {
-      environment: process.env.ENVIRONMENT,
       paranetName: "DKG Swarm Paranet",
       paranetDescription: "A decentralized ecosystem of OriginTrail builders and AI agents growing the AI Agent Swarm together. Visit dkgswarm.com!",
       paranetNodesAccessPolicy: 0, // Open access (public)
@@ -38,9 +42,7 @@ async function createParanetFromUAL() {
       paranetKcSubmissionPolicy: 0, // Open access (public)
       blockchain: {
         name: process.env.BLOCKCHAIN_NAME,
-        publicKey: process.env.PUBLIC_KEY,
         privateKey: process.env.PRIVATE_KEY,
-        handleNotMinedError: true,
       },
     };
 

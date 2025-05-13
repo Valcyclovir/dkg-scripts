@@ -4,8 +4,13 @@ require("dotenv").config();
 const node_options = {
   endpoint: process.env.OTNODE_HOST,
   port: process.env.OTNODE_PORT,
+  blockchain: {
+      name: process.env.BLOCKCHAIN_NAME,
+      privateKey: process.env.PRIVATE_KEY,
+  },
   useSSL: false,
   maxNumberOfRetries: 100,
+  frequency: 2,
 };
 
 const dkg = new DKGClient(node_options);
@@ -25,7 +30,6 @@ async function modifyParanetPolicy() {
 
     // Step 3: Create or modify Paranet with updated policy
     const paranetOptions = {
-      environment: process.env.ENVIRONMENT,
       paranetName: process.env.PARANET_NAME,
       paranetDescription: process.env.PARANET_DESCRIPTION,
       paranetNodesAccessPolicy: parseInt(process.env.PARANET_NODES_ACCESS_POLICY),
@@ -33,9 +37,7 @@ async function modifyParanetPolicy() {
       paranetKcSubmissionPolicy: parseInt(process.env.PARANET_KC_SUBMISSION_POLICY),
       blockchain: {
         name: process.env.BLOCKCHAIN_NAME,
-        publicKey: process.env.PUBLIC_KEY,
         privateKey: process.env.PRIVATE_KEY,
-        handleNotMinedError: true,
       },
     };
 

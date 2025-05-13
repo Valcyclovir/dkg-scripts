@@ -4,9 +4,15 @@ require("dotenv").config();
 const node_options = {
   endpoint: process.env.OTNODE_HOST,
   port: process.env.OTNODE_PORT,
-  useSSL: false,
+  blockchain: {
+      name: process.env.BLOCKCHAIN_NAME,
+      privateKey: process.env.PRIVATE_KEY,
+  },
+  useSSL: true,
   maxNumberOfRetries: 100,
+  frequency: 2,
 };
+
 
 const dkg = new DKGClient(node_options);
 
@@ -35,16 +41,13 @@ async function createParanet() {
 
     // Step 3: Create the profile knowledge collection
     const assetOptions = {
-      environment: process.env.ENVIRONMENT,
       epochsNum: parseInt(process.env.EPOCHS_NUM),
       maxNumberOfRetries: parseInt(process.env.MAX_NUMBER_OF_RETRIES),
       frequency: parseInt(process.env.FREQUENCY),
       contentType: process.env.CONTENT_TYPE,
       blockchain: {
         name: process.env.BLOCKCHAIN_NAME,
-        publicKey: process.env.PUBLIC_KEY,
         privateKey: process.env.PRIVATE_KEY,
-        handleNotMinedError: true,
       },
     };
 
