@@ -8,7 +8,7 @@ const node_options = {
   blockchain: {
     name: 'otp:2043', // Matches UAL chain ID; adjust if needed
     publicKey: '',
-    privateKey: 'REDACTED', // Your private key
+    privateKey: '', // Your private key
   },
   environment: 'testnet', // Adjust to 'development' for Hardhat
   maxNumberOfRetries: 300,
