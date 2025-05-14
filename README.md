@@ -20,7 +20,7 @@ A collection of scripts and utilities for creating, managing, and querying Origi
 ## Installation
 
 ```bash
-git clone <this-repo>
+git clone https://github.com/Valcyclovir/dkg-scripts.git
 cd dkg-scripts
 npm install
 ```
@@ -42,8 +42,6 @@ cp .env.example .env
 | OTNODE_PORT                    | OTNode API port (e.g., 8900)                     |
 | BLOCKCHAIN_NAME                | Blockchain network name (e.g., otp:2043)         |
 | PRIVATE_KEY                    | Blockchain private key                           |
-| PUBLIC_KEY                     | Blockchain public key                            |
-| ENVIRONMENT                    | DKG environment (e.g., testnet, development)     |
 | EPOCHS_NUM                     | Number of epochs for asset publishing            |
 | MAX_NUMBER_OF_RETRIES          | Max retries for DKG operations                   |
 | FREQUENCY                      | Frequency for DKG polling                        |
