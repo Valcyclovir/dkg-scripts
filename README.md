@@ -1,4 +1,4 @@
-# otnode-paranet
+# DKG-scripts
 
 A collection of scripts and utilities for creating, managing, and querying OriginTrail DKG (Decentralized Knowledge Graph) assets and paranets. This toolkit helps you automate asset creation, paranet management, and SPARQL queries on the OriginTrail network.
 
