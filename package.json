@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "dkg.js": "^8.0.12",
     "dotenv": "^16.4.7"
   }
