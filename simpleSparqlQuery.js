@@ -1,26 +1,22 @@
-// File: simpleSparqlQuery.js
+require('dotenv').config();
 const DKGClient = require('dkg.js');
 
-// Hardcoded configuration, aligned with graphSearch.ts
 const node_options = {
-  endpoint: 'http://localhost', // Use http://localhost per your note
-  port: '8900',
+  endpoint: process.env.OTNODE_HOST || 'http://localhost', // Fallback to localhost
+  port: process.env.OTNODE_PORT || '8900',
   blockchain: {
-    name: 'otp:2043', // Matches UAL chain ID; adjust if needed
-    publicKey: '',
-    privateKey: '', // Your private key
+    name: process.env.BLOCKCHAIN_NAME || 'base:84532',
+    privateKey: process.env.PRIVATE_KEY || '',
   },
-  environment: 'testnet', // Adjust to 'development' for Hardhat
-  maxNumberOfRetries: 300,
-  frequency: 2,
-  contentType: 'all',
+  maxNumberOfRetries: parseInt(process.env.MAX_NUMBER_OF_RETRIES) || 300,
+  frequency: parseInt(process.env.FREQUENCY) || 2,
+  contentType: process.env.CONTENT_TYPE || 'all',
   nodeApiVersion: '/v1',
-  useSSL: false,
+  useSSL: process.env.USE_SSL === 'true', // Correctly parse boolean
 };
 
-// Validate configuration
 function validateConfig(config) {
-  const requiredStringFields = ['endpoint', 'port', 'environment'];
+  const requiredStringFields = ['endpoint', 'port'];
   for (const field of requiredStringFields) {
     if (typeof config[field] !== 'string' || !config[field]) {
       throw new Error(`Invalid configuration: Missing or invalid value for '${field}'`);
@@ -29,9 +25,9 @@ function validateConfig(config) {
   if (!config.blockchain || typeof config.blockchain !== 'object') {
     throw new Error("Invalid configuration: 'blockchain' must be an object");
   }
-  const blockchainFields = ['name', 'publicKey', 'privateKey'];
+  const blockchainFields = ['name', 'privateKey'];
   for (const field of blockchainFields) {
-    if (typeof config.blockchain[field] !== 'string') {
+    if (typeof config.blockchain[field] !== 'string' || !config.blockchain[field]) {
       throw new Error(`Invalid configuration: Missing or invalid value for 'blockchain.${field}'`);
     }
   }
@@ -41,14 +37,16 @@ function validateConfig(config) {
 validateConfig(node_options);
 const dkg = new DKGClient(node_options);
 
-// Simple SPARQL query
+// SPARQL query to retrieve Dataset assets
 const sparqlQuery = `
 PREFIX SCHEMA: <http://schema.org/>
-SELECT DISTINCT ?asset ?name ?description
+SELECT DISTINCT ?asset ?name ?description ?keywords ?datePublished
 WHERE {
-  ?asset a SCHEMA:DataCatalog ;
+  ?asset a SCHEMA:Dataset ;
          SCHEMA:name ?name ;
          SCHEMA:description ?description .
+  OPTIONAL { ?asset SCHEMA:keywords ?keywords . }
+  OPTIONAL { ?asset SCHEMA:datePublished ?datePublished . }
 }
 LIMIT 10
 `.trim();
@@ -67,7 +65,6 @@ async function executeQuery() {
       queryResult = await dkg.graph.query(sparqlQuery, 'SELECT', {
         blockchain: {
           name: node_options.blockchain.name,
-          publicKey: node_options.blockchain.publicKey,
           privateKey: node_options.blockchain.privateKey,
         },
         maxNumberOfRetries: node_options.maxNumberOfRetries,
