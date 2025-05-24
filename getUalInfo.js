@@ -4,6 +4,10 @@ require("dotenv").config();
 const node_options = {
   endpoint: process.env.OTNODE_HOST,
   port: process.env.OTNODE_PORT,
+  blockchain: {
+    name: process.env.BLOCKCHAIN_NAME,
+    privateKey: process.env.PRIVATE_KEY,
+  },
   useSSL: false,
   maxNumberOfRetries: 100,
 };
@@ -26,7 +30,6 @@ async function getParanetData() {
       environment: process.env.ENVIRONMENT,
       blockchain: {
         name: process.env.BLOCKCHAIN_NAME,
-        publicKey: process.env.PUBLIC_KEY,
         privateKey: process.env.PRIVATE_KEY,
       },
       validate: true, // Optional: Validate the Paranet data (per V8 docs)

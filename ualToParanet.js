@@ -34,12 +34,13 @@ async function createParanetFromUAL() {
     console.log("Using Profile UAL:", profileUAL);
 
     // Step 3: Define Paranet options
-    const paranetOptions = {
-      paranetName: "DKG Swarm Paranet",
-      paranetDescription: "A decentralized ecosystem of OriginTrail builders and AI agents growing the AI Agent Swarm together. Visit dkgswarm.com!",
-      paranetNodesAccessPolicy: 0, // Open access (public)
-      paranetMinersAccessPolicy: 0, // Open access (public)
-      paranetKcSubmissionPolicy: 0, // Open access (public)
+        const paranetOptions = {
+      environment: process.env.ENVIRONMENT,
+      paranetName: process.env.PARANET_NAME,
+      paranetDescription: process.env.PARANET_DESCRIPTION,
+      paranetNodesAccessPolicy: parseInt(process.env.PARANET_NODES_ACCESS_POLICY),
+      paranetMinersAccessPolicy: parseInt(process.env.PARANET_MINERS_ACCESS_POLICY),
+      paranetKcSubmissionPolicy: parseInt(process.env.PARANET_KC_SUBMISSION_POLICY),
       blockchain: {
         name: process.env.BLOCKCHAIN_NAME,
         privateKey: process.env.PRIVATE_KEY,

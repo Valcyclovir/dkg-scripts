@@ -1,156 +1,191 @@
-# DKG-scripts
+# DKG Scripts
 
-A collection of scripts and utilities for creating, managing, and querying OriginTrail DKG (Decentralized Knowledge Graph) assets and paranets. This toolkit helps you automate asset creation, paranet management, and SPARQL queries on the OriginTrail network.
+This repository contains a collection of Node.js scripts for interacting with the OriginTrail Decentralized Knowledge Graph (DKG) using the `dkg.js` library. The scripts enable creating, managing, and querying knowledge assets and Paranets, as well as leveraging AI (Google Gemini) for generating structured JSON-LD data and SPARQL queries. These tools are designed for developers working with decentralized knowledge graphs and blockchain-based data ecosystems.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Scripts Overview](#scripts-overview)
+- [Usage Examples](#usage-examples)
+- [Assets](#assets)
+- [Contributing](#contributing)
+- [License](#license)
+- [Notes](#notes)
+
+---
 
 ## Features
 
-- **Create and manage paranets** on the OriginTrail DKG
-- **Publish knowledge assets** (e.g., datasets, events) to the DKG
-- **Submit assets to a paranet**
-- **Query the DKG** using SPARQL
-- **Modify paranet policies**
-- **Fetch and inspect asset/paranet information**
+- Create knowledge assets on the OriginTrail DKG with customizable configurations.
+- Submit assets to Paranets for collaborative knowledge sharing.
+- Convert text to structured JSON-LD using Google Gemini AI.
+- Create and modify Paranets with flexible access policies.
+- Query DKG and Paranet data using SPARQL, including AI-generated queries.
+- Retrieve asset and Paranet metadata by Universal Asset Locator (UAL).
+
+---
 
 ## Prerequisites
 
-- Node.js (v16+ recommended)
-- Access to an OriginTrail node (OTNode)
-- Blockchain credentials (private/public key, network info)
+- Node.js (v16 or higher)
+- npm (v8 or higher)
+- An OriginTrail DKG node (testnet or mainnet) accessible via endpoint
+- A blockchain wallet with a private key (e.g., for Base, Gnosis, or Neuroweb)
+- A Google Gemini API key for scripts utilizing AI features (`createAssetSubmitParanetLlm.js`, `sparql-query-llm.js`)
+
+---
 
 ## Installation
 
+Clone the repository:
+
 ```bash
-git clone https://github.com/Valcyclovir/dkg-scripts.git
+git clone https://github.com/your-username/dkg-scripts.git
 cd dkg-scripts
+```
+
+Install dependencies:
+
+```bash
 npm install
 ```
 
-## Environment Setup
+---
 
-Create a `.env` file in the project root (see below for required variables):
+## Configuration
 
+Create a `.env` file in the root directory based on the provided `.env.example` or use the following template:
+
+```env
+# DKG node connection details
+OTNODE_HOST=https://v6-pegasus-node-02.origin-trail.network/
+OTNODE_PORT=8900
+USE_SSL=true
+
+# Wallet details
+PRIVATE_KEY=your_private_key
+BLOCKCHAIN_NAME=base:84532
+# Values: (mainnet) "base:8453", "gnosis:100", "otp:2043" (testnet) "base:84532", "gnosis:10200", "otp:20430"
+
+# Paranet UAL (optional, required for Paranet-related scripts)
+PARANET_UAL=
+
+# Profile knowledge asset configuration
+PROFILE_UAL=""
+PROFILE_NAME=""
+EPOCHS_NUM=12
+MAX_NUMBER_OF_RETRIES=30
+FREQUENCY=2
+CONTENT_TYPE="all"
+
+# Paranet configuration
+PARANET_NAME="dkg-script"
+PARANET_DESCRIPTION="a collection of Node.js scripts for interacting with the OriginTrail Decentralized Knowledge Graph"
+PARANET_NODES_ACCESS_POLICY=0 #OPEN:0 PERMISSIONED: 1
+PARANET_MINERS_ACCESS_POLICY=0 #OPEN:0 PERMISSIONED: 1
+PARANET_KC_SUBMISSION_POLICY=0 #OPEN:0 STAGING: 1
+
+# Google Gemini API key (for LLM scripts)
+GEMINI_API_KEY=your_gemini_api_key # Get a key here: https://ai.google.dev/gemini-api/docs/api-key
+
+# Assets directory (optional, defaults to 'assets')
+ASSETS_DIR=assets
+```
+
+Replace placeholders (e.g., `your_private_key`, `your_gemini_api_key`) with your actual credentials. Ensure the assets folder exists if using scripts that process files (`createAssetSubmitParanet.js`, `createAssetSubmitParanetLlm.js`).
+
+---
+
+## Scripts Overview
+
+| Script                        | Description                                                                                      |
+|-------------------------------|--------------------------------------------------------------------------------------------------|
+| `createAsset.js`              | Creates a single knowledge asset (Dataset schema) on the DKG using parameters from the `.env`.   |
+| `createAssetSubmitParanet.js` | Processes multiple JSON/JSON-LD files from the assets directory, creates assets, and optionally submits them to a Paranet. |
+| `createAssetSubmitParanetLlm.js` | Converts `.txt` files to JSON-LD using Google Gemini AI, creates assets, and submits them to a Paranet if configured. |
+| `createParanet.js`            | Creates a Paranet using a profile knowledge asset or an existing UAL, with customizable access policies. |
+| `getUalInfo.js`               | Retrieves metadata for a specified Paranet or asset using its UAL.                               |
+| `modifyParanet.js`            | Modifies an existing Paranet’s policies using a profile UAL.                                     |
+| `sparqlQuery.js`              | Executes a predefined SPARQL query to retrieve Dataset assets from the DKG.                      |
+| `sparql-query-llm.js`         | Generates and executes a SPARQL query using Google Gemini AI based on a user-defined query string.|
+| `sparqlQueryParanet.js`       | Executes a SPARQL query to retrieve Event assets from a specified Paranet.                       |
+| `ualToParanet.js`             | Creates a Paranet from an existing profile UAL with predefined settings for the "DKG Swarm Paranet". |
+
+---
+
+## Usage Examples
+
+**Create a Knowledge Asset:**
 ```bash
-cp .env.example .env
-# Edit .env and fill in your configuration
+node createAsset.js
 ```
+_Creates a test dataset asset and outputs its UAL._
 
-**Required .env variables:**
-
-| Variable                       | Description                                      |
-|--------------------------------|--------------------------------------------------|
-| OTNODE_HOST                    | OTNode API host (e.g., http://localhost)         |
-| OTNODE_PORT                    | OTNode API port (e.g., 8900)                     |
-| BLOCKCHAIN_NAME                | Blockchain network name (e.g., otp:2043)         |
-| PRIVATE_KEY                    | Blockchain private key                           |
-| EPOCHS_NUM                     | Number of epochs for asset publishing            |
-| MAX_NUMBER_OF_RETRIES          | Max retries for DKG operations                   |
-| FREQUENCY                      | Frequency for DKG polling                        |
-| CONTENT_TYPE                   | Content type for assets (e.g., application/json) |
-| PARANET_NAME                   | Name for your paranet                            |
-| PARANET_DESCRIPTION            | Description for your paranet                     |
-| PARANET_NODES_ACCESS_POLICY    | Paranet nodes access policy (integer)            |
-| PARANET_MINERS_ACCESS_POLICY   | Paranet miners access policy (integer)           |
-| PARANET_KC_SUBMISSION_POLICY   | Paranet KC submission policy (integer)           |
-| PARANET_UAL                    | (Optional) Existing Paranet UAL                  |
-| PROFILE_NAME                   | (Optional) Name for profile knowledge asset      |
-| ASSET_NAME                     | (Optional) Name for asset creation               |
-| ASSETS_DIR                     | (Optional) Directory for asset files (default: assets) |
-
-> **Note:** The `.env` file is ignored by git.
-
-## Usage
-
-### 1. Create a Paranet
-
-Creates a new paranet or uses an existing one if `PARANET_UAL` is set.
-
+**Process and Submit Assets to a Paranet:**
 ```bash
-node create-paranet.js
+node createAssetSubmitParanet.js
 ```
+_Processes all `.json` and `.jsonld` files in the assets directory, creates assets, and submits them to the Paranet specified in `PARANET_UAL`._
 
-### 2. Create a Knowledge Asset
-
-Publishes a new knowledge asset to the DKG.
-
+**Convert Text to JSON-LD and Publish:**
 ```bash
-node create-asset.js
+node createAssetSubmitParanetLlm.js
 ```
+_Converts `.txt` files in the assets directory to JSON-LD using Gemini AI, creates assets, and submits them to a Paranet._
 
-### 3. Create and Submit Assets to Paranet
-
-Publishes all JSON/JSON-LD assets in the `assets/` directory and submits them to the paranet if `PARANET_UAL` is set.
-
+**Create a Paranet:**
 ```bash
-node create-asset-submit-paranet.js
+node createParanet.js
 ```
+_Creates a Paranet with the configuration defined in the `.env` file._
 
-### 4. Create Paranet from Existing UAL
-
-Creates a paranet using an existing profile knowledge asset UAL.
-
+**Query Paranet Data:**
 ```bash
-node ual-to-paranet.js
+node sparqlQueryParanet.js
 ```
+_Retrieves Event assets from the Paranet specified in `PARANET_UAL`._
 
-### 5. Modify Paranet Policy
+---
 
-Updates the access/submission policies of an existing paranet.
+## Assets
 
-```bash
-node modify-paranet.js
-```
+The `assets` folder contains example files:
 
-### 6. Query the DKG
+- `asset0.jsonld`: A sample SocialMediaPosting asset describing a deep fake celebrity video.
+- `asset1.txt`: A text description of a suspicious cryptocurrency endorsement, used by `createAssetSubmitParanetLlm.js` to generate JSON-LD.
 
-Runs a sample SPARQL query to list assets of type `schema:Event`.
+Ensure the `ASSETS_DIR` in `.env` points to the correct folder (defaults to `assets`).
 
-```bash
-node query.js
-```
+---
 
-### 7. Simple SPARQL Query
+## Contributing
 
-Runs a simple SPARQL query for `schema:DataCatalog` assets.
+Contributions are welcome! Please:
 
-```bash
-node simpleSparqlQuery.js
-```
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/your-feature`).
+3. Commit changes (`git commit -m 'Add your feature'`).
+4. Push to the branch (`git push origin feature/your-feature`).
+5. Open a pull request.
 
-### 8. Get Paranet/Asset Info
+---
 
-Fetches and prints information about a paranet or asset by UAL.
+## License
 
-```bash
-node get-ual-info.js
-```
+This project is licensed under the ISC License. See the `package.json` for details.
 
-## Example Asset File
-
-Place your asset files in the `assets/` directory. Example (`assets/asset1.jsonld`):
-
-```json
-{
-  "public": {
-    "@context": "http://schema.org",
-    "@type": "Event",
-    "name": "DeepFakeCelebrityVideo",
-    "description": "A viral video shows a celebrity endorsing a suspicious product. Is it real or a deep fake?",
-    "isReal": false,
-    "image": "https://yourdomain.com/game/media/event1.jpg",
-    "eventType": "question",
-    "keywords": ["deepFake", "misinformation", "video"],
-    "creator": {
-      "@type": "Organization",
-      "name": "Swarm of Truth"
-    },
-    "datePublished": "2025-05-13T22:55:00Z",
-    "license": "https://creativecommons.org/licenses/by/4.0/"
-  }
-}
-```
+---
 
 ## Notes
 
-- All scripts require a properly configured `.env` file.
-- For more details on each script, read the comments at the top of each `.js` file.
-- The `node_modules/` and `.env` files are git-ignored.
+- The README assumes the repository is hosted on GitHub; update the clone URL with your actual repository URL.
+- The `.env` example includes sensitive fields like `PRIVATE_KEY` and `GEMINI_API_KEY`. In a real README, you might want to emphasize securing these values and not committing the `.env` file.
+- The scripts rely on environment variables, so the README emphasizes proper `.env` configuration.
+- The assets section briefly describes the provided files to give users context for testing.
+
+If you have additional details (e.g., specific blockchain networks, Paranet use cases, or project goals), let me know, and I can refine the README further!

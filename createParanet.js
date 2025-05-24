@@ -77,9 +77,7 @@ async function createParanet() {
       paranetKcSubmissionPolicy: parseInt(process.env.PARANET_KC_SUBMISSION_POLICY),
       blockchain: {
         name: process.env.BLOCKCHAIN_NAME,
-        publicKey: process.env.PUBLIC_KEY,
         privateKey: process.env.PRIVATE_KEY,
-        handleNotMinedError: true,
       },
     };
 

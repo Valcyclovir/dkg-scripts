@@ -1,23 +1,20 @@
-// File: simpleSparqlQuery.js
-const DKGClient = require('dkg.js');
 require('dotenv').config();
+const DKGClient = require('dkg.js');
 
-// Configuration from .env
 const node_options = {
-  endpoint: process.env.OTNODE_HOST,
-  port: process.env.OTNODE_PORT,
+  endpoint: process.env.OTNODE_HOST || 'http://localhost',
+  port: process.env.OTNODE_PORT || '8900',
   blockchain: {
-    name: process.env.BLOCKCHAIN_NAME,
-    privateKey: process.env.PRIVATE_KEY,
+    name: process.env.BLOCKCHAIN_NAME || 'base:84532',
+    privateKey: process.env.PRIVATE_KEY || '',
   },
-  maxNumberOfRetries: parseInt(process.env.MAX_NUMBER_OF_RETRIES),
-  frequency: parseInt(process.env.FREQUENCY),
-  contentType: process.env.CONTENT_TYPE,
+  maxNumberOfRetries: parseInt(process.env.MAX_NUMBER_OF_RETRIES) || 300,
+  frequency: parseInt(process.env.FREQUENCY) || 2,
+  contentType: process.env.CONTENT_TYPE || 'all',
   nodeApiVersion: '/v1',
-  useSSL: process.env.USE_SSL,
+  useSSL: process.env.USE_SSL === 'true',
 };
 
-// Validate configuration
 function validateConfig(config) {
   const requiredStringFields = ['endpoint', 'port'];
   for (const field of requiredStringFields) {
@@ -40,17 +37,16 @@ function validateConfig(config) {
 validateConfig(node_options);
 const dkg = new DKGClient(node_options);
 
-// Diagnostic SPARQL query to list schema:Event assets
+// SPARQL query to retrieve Dataset assets
 const sparqlQuery = `
-PREFIX schema: <http://schema.org/>
-
-SELECT ?asset ?name ?description
+PREFIX SCHEMA: <http://schema.org/>
+SELECT DISTINCT ?asset ?name ?description ?keywords ?datePublished
 WHERE {
-  GRAPH ?g {
-    ?asset a schema:Event ;
-      schema:name ?name .
-    OPTIONAL { ?asset schema:description ?description . }
-  }
+  ?asset a SCHEMA:Dataset ;
+         SCHEMA:name ?name ;
+         SCHEMA:description ?description .
+  OPTIONAL { ?asset SCHEMA:keywords ?keywords . }
+  OPTIONAL { ?asset SCHEMA:datePublished ?datePublished . }
 }
 LIMIT 10
 `.trim();
@@ -62,14 +58,13 @@ async function executeQuery() {
     const nodeInfo = await dkg.node.info();
     console.log('Connected to node:', nodeInfo);
 
-    // Execute SPARQL query
+    // Execute primary query
     console.log('Executing SPARQL query:\n', sparqlQuery);
     let queryResult;
     try {
       queryResult = await dkg.graph.query(sparqlQuery, 'SELECT', {
         blockchain: {
           name: node_options.blockchain.name,
-          publicKey: node_options.blockchain.publicKey,
           privateKey: node_options.blockchain.privateKey,
         },
         maxNumberOfRetries: node_options.maxNumberOfRetries,
@@ -81,12 +76,15 @@ async function executeQuery() {
     }
 
     if (!queryResult || !queryResult.data) {
-      console.log('No schema:Event assets found');
-      return;
+      throw new Error('DKG query failed: No data returned');
     }
 
-    console.log('Found schema:Event assets:');
-    console.log(JSON.stringify(queryResult.data, null, 2));
+    const results = queryResult.data.map(entry => {
+      const formattedParts = Object.keys(entry).map(key => `${key}: ${entry[key]}`);
+      return formattedParts.join(', ');
+    });
+
+    console.log(JSON.stringify(results, null, 2));
   } catch (error) {
     console.error('Error executing query:', error.message);
     throw error;

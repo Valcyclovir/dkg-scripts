@@ -1,0 +1,4 @@
+Description: A viral video shows a famous actor endorsing a new cryptocurrency promising 1000% returns. Social media buzzes with excitement, but the video seems too perfect. Is this a legitimate endorsement or an AI-generated deep fake?
+
+isReal: False
+
