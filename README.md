@@ -177,15 +177,4 @@ Contributions are welcome! Please:
 
 ## License
 
-This project is licensed under the ISC License. See the `package.json` for details.
-
----
-
-## Notes
-
-- The README assumes the repository is hosted on GitHub; update the clone URL with your actual repository URL.
-- The `.env` example includes sensitive fields like `PRIVATE_KEY` and `GEMINI_API_KEY`. In a real README, you might want to emphasize securing these values and not committing the `.env` file.
-- The scripts rely on environment variables, so the README emphasizes proper `.env` configuration.
-- The assets section briefly describes the provided files to give users context for testing.
-
-If you have additional details (e.g., specific blockchain networks, Paranet use cases, or project goals), let me know, and I can refine the README further!
+This project is licensed under the ISC License. 
