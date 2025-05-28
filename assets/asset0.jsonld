@@ -1,60 +1,10 @@
 {
   "public": {
-    "@context": "http://schema.org",
-    "@type": "SocialMediaPosting",
-    "headline": "DeepFakeCelebrityVideo: Viral video of celebrity endorsement questioned for authenticity.",
-    "articleBody": "\"name\": \"DeepFakeCelebrityVideo\"\n\"description\": \"A viral video shows a celebrity endorsing a suspicious product. Is it real or a deep fake?\"\n\"isReal\": false\n\"image\": \"https://yourdomain.com/game/media/event1.jpg\"\n\"creator\": Swarm of Truth",
-    "author": {
-      "@type": "Person",
-      "@id": "uuid:Swarm of Truth",
-      "name": "Swarm of Truth",
-      "identifier": "Swarm of Truth",
-      "url": "https://twitter.com/Swarm of Truth"
-    },
-    "dateCreated": "2023-10-27T13:17:15Z",
-    "interactionStatistic": [
-      {
-        "@type": "InteractionCounter",
-        "interactionType": {
-          "@type": "LikeAction"
-        },
-        "userInteractionCount": 0
-      },
-      {
-        "@type": "InteractionCounter",
-        "interactionType": {
-          "@type": "ShareAction"
-        },
-        "userInteractionCount": 0
-      }
-    ],
-    "mentions": [],
-    "keywords": [
-      {
-        "@type": "Text",
-        "@id": "uuid:DeepFakeCelebrityVideo",
-        "name": "DeepFakeCelebrityVideo"
-      },
-      {
-        "@type": "Text",
-        "@id": "uuid:deep fake",
-        "name": "deep fake"
-      }
-    ],
-    "about": [
-      {
-        "@type": "Thing",
-        "@id": "uuid:Deepfake",
-        "name": "Deepfake",
-        "url": "https://en.wikipedia.org/wiki/Deepfake"
-      },
-      {
-        "@type": "Thing",
-        "@id": "uuid:CelebrityEndorsement",
-        "name": "Celebrity Endorsement",
-        "url": "https://en.wikipedia.org/wiki/Testimonial"
-      }
-    ],
-    "url": "https://twitter.com/User/status/unknown"
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "John Doe",
+    "jobTitle": "Software Engineer",
+    "telephone": "(123) 456-7890",
+    "url": "http://www.example.com"
   }
 }
